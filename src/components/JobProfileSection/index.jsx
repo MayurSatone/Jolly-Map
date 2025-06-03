@@ -1,3 +1,4 @@
+// JobProfileSection.js
 import { Component } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import { BsSearch } from 'react-icons/bs';
@@ -108,6 +109,10 @@ class JobProfileSection extends Component {
     }
   };
 
+  renderJobCard = (jobDetails) => {
+    return <JobCard key={jobDetails.id} jobDetails={jobDetails} />;
+  };
+
   changeSearchInput = event => {
     this.setState({ searchInput: event.target.value });
   };
@@ -154,9 +159,7 @@ class JobProfileSection extends Component {
           </button>
         </div>
         <ul className="list-none flex flex-col w-full items-center">
-          {jobsList.map(eachData => (
-            <JobCard key={eachData.id} jobDetails={eachData} />
-          ))}
+          {jobsList.map(this.renderJobCard)}
         </ul>
       </div>
     ) : (

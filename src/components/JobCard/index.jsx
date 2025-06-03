@@ -15,6 +15,41 @@ const JobCard = (props) => {
     jobDescription,
   } = jobDetails
 
+  // Format package based on employment type
+  const getFormattedPackage = () => {
+    if (employmentType.toLowerCase() === 'internship') {
+      // Handle cases where package might be "0" or not provided
+      if (!packagePerAnnum || packagePerAnnum === '0') {
+        return 'Stipend not disclosed';
+      }
+
+      try {
+        // Extract numeric value from package string (e.g., "10 LPA" -> 10)
+        const numericValue = parseFloat(packagePerAnnum.split(' ')[0]);
+        
+        if (isNaN(numericValue)) {
+          return packagePerAnnum; // Return original if parsing fails
+        }
+
+        // Calculate stipend based on package value:
+        // - 8k per LPA for first 5 LPA
+        // - 6k per additional LPA beyond 5
+        const baseStipend = numericValue <= 5 
+          ? numericValue * 8000 
+          : 40000 + (numericValue - 5) * 6000;
+        
+        // Format with proper thousands separator
+        return `₹${(baseStipend/1000).toLocaleString('en-IN')}k/month`;
+      } catch (error) {
+        console.error('Error calculating stipend:', error);
+        return packagePerAnnum; // Fallback to original value
+      }
+    }
+    return packagePerAnnum; // Return as-is for non-internship roles
+  }
+
+  const formattedPackage = getFormattedPackage();
+
   return (
     <Link 
       to={`/jobs/${id}`} 
@@ -44,10 +79,14 @@ const JobCard = (props) => {
             </div>
             <div className="flex items-center">
               <HiMail className="text-white text-lg md:text-xl ml-4 md:ml-8" />
-              <p className="text-white ml-2 text-sm md:text-base">{employmentType}</p>
+              <p className="text-white ml-2 text-sm md:text-base">
+                {employmentType === 'INTERNSHIP' ? 'Internship' : employmentType}
+              </p>
             </div>
           </div>
-          <p className="text-white text-base md:text-lg font-medium">{packagePerAnnum}</p>
+          <p className="text-white text-base md:text-lg font-medium">
+            {formattedPackage}
+          </p>
         </div>
         
         <hr className="border-gray-600 my-4" />
